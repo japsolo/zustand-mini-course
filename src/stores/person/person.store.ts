@@ -1,6 +1,7 @@
 import { create, type StateCreator } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { firebaseStorage } from "@/stores/storages/firebase-storage";
+import { personStateSchema } from "./person.schema";
 
 // import { customSessionStorage } from "../storages/session-storage";
 // import { firebaseStorageOptimized } from "../storages/firebase-storage-optimized";
@@ -31,5 +32,31 @@ const storeAPI: StateCreator<PersonStore, [["zustand/devtools", never], ["zustan
 
 export const usePersonStore = create<PersonStore>()(
 	// devtools(persist(storeAPI, { name: "person-storage", storage: customSessionStorage })),
-	devtools(persist(storeAPI, { name: "person-storage", storage: firebaseStorage })),
+	devtools(
+		persist(storeAPI, {
+			name: "person-storage",
+			storage: firebaseStorage,
+			merge: (persisted, current) => {
+				// const { success, data } = personStateSchema.safeParse(persisted);
+
+				// if (success) {
+				// 	return {
+				// 		...current,
+				// 		...data,
+				// 	};
+				// }
+
+				// console.log("Only return current data");
+
+				// return {
+				// 	...current,
+				// };
+
+				return {
+					...current,
+					...personStateSchema.parse(persisted),
+				};
+			},
+		}),
+	),
 );

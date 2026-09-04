@@ -57,6 +57,9 @@ const storageAPI: StateStorage = {
 	getItem: async (name: string): Promise<string | null> => {
 		try {
 			const data = await fetch(`${fireBaseURL}/${name}.json`).then((res) => res.json());
+
+			if (!data) return null;
+
 			return JSON.stringify(data); // data is an object, that's why we need to serialized as string
 		} catch (error) {
 			console.log(error);
