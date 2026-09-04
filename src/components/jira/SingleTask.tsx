@@ -1,6 +1,5 @@
 import { IoReorderTwoOutline } from "react-icons/io5";
-import type { Task } from "@/interfaces";
-import { useTaskStore } from "@/stores";
+import { type Task, useTaskStore } from "@/stores";
 
 interface Props {
 	task: Task;

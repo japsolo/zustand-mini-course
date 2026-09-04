@@ -1,7 +1,6 @@
 import { useShallow } from "zustand/shallow";
 import { JiraTasks } from "@/components";
-import { TaskStatus } from "@/interfaces";
-import { useTaskStore } from "@/stores";
+import { TaskStatus, useTaskStore } from "@/stores";
 
 export const JiraPage = () => {
 	const pendingTasks = useTaskStore(useShallow((state) => state.getTasksByStatus(TaskStatus.OPEN)));

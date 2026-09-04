@@ -1,14 +1,12 @@
 // import { produce } from "immer";
 import { v4 as uuid } from "uuid";
+import type z from "zod";
 import { create, type StateCreator } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { type Task, TaskStatus } from "@/interfaces";
+import { type Task, TaskStatus, taskStateSchema } from "./task.schema";
 
-type TasksState = {
-	tasks: Record<string, Task>;
-	draggingTaskId: string | null;
-};
+type TasksState = z.infer<typeof taskStateSchema>;
 
 type Actions = {
 	getTasksByStatus: (status: TaskStatus) => Task[];
@@ -87,4 +85,32 @@ const storeAPI: StateCreator<
 	},
 });
 
-export const useTaskStore = create<TaskStore>()(devtools(persist(immer(storeAPI), { name: "tasks-store" })));
+export const useTaskStore = create<TaskStore>()(
+	devtools(
+		persist(immer(storeAPI), {
+			name: "tasks-store",
+			merge: (persisted, current) => {
+				// `persist` calls merge on every hydration, including the first run, where
+				// it passes undefined because nothing has been stored yet. That is not
+				// corruption, so it must not warn — and since merge's result replaces the
+				// whole state, returning anything but `current` here wipes the initial tasks.
+				if (persisted === undefined) return current;
+
+				const parsed = taskStateSchema.safeParse(persisted);
+
+				if (!parsed.success) {
+					if (import.meta.env.DEV) {
+						console.warn("[tasks-store] estado persistido inválido, se usan los valores iniciales", {
+							received: persisted,
+							issues: parsed.error.issues,
+						});
+					}
+
+					return current;
+				}
+
+				return { ...current, ...parsed.data };
+			},
+		}),
+	),
+);
