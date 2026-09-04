@@ -2,23 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
-
 h1 {
-  @apply text-3xl font-bold text-gray-800;
+	@apply text-3xl font-bold text-gray-800;
 }
 
 h2 {
-  @apply text-2xl font-semibold text-gray-800;
+	@apply text-2xl font-semibold text-gray-800;
 }
 
 hr {
-  @apply my-1 border-gray-300 border mb-3;
+	@apply my-1 mb-3 border border-gray-300;
 }
 
-button {
-  @apply transition-all hover:bg-indigo-800 bg-indigo-600 px-8 py-2 rounded-3xl text-gray-100 font-semibold uppercase tracking-wide shadow-md;
+button,
+button[type] {
+	@apply px-8 py-2 font-semibold tracking-wide text-gray-100 uppercase bg-indigo-600 rounded-3xl shadow-md transition-all hover:bg-indigo-800;
 }
 
-input:not(.swal2-input)[type=text],input:not(.swal2-input)[type=password], input:not(.swal2-input)[type=email], input:not(.swal2-input)[type=number], input:not(.swal2-input)[type=date], input:not(.swal2-input)[type=time]  {
-  @apply w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500;
+input:not(.swal2-input)[type="text"],
+input:not(.swal2-input)[type="password"],
+input:not(.swal2-input)[type="email"],
+input:not(.swal2-input)[type="number"],
+input:not(.swal2-input)[type="date"],
+input:not(.swal2-input)[type="time"] {
+	@apply px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:border-blue-500;
 }

@@ -1,26 +1,24 @@
-import { JiraTasks } from '../../components';
+import { useShallow } from "zustand/shallow";
+import { JiraTasks } from "@/components";
+import { TaskStatus } from "@/interfaces";
+import { useTaskStore } from "@/stores";
 
 export const JiraPage = () => {
-  return (
-    <>
-      <h1>Tareas</h1>
-      <p>Manejo de estado con objectos de Zustand</p>
-      <hr />
+	const pendingTasks = useTaskStore(useShallow((state) => state.getTasksByStatus(TaskStatus.OPEN)));
+	const inProgressTasks = useTaskStore(useShallow((state) => state.getTasksByStatus(TaskStatus.IN_PROGRESS)));
+	const doneTasks = useTaskStore(useShallow((state) => state.getTasksByStatus(TaskStatus.DONE)));
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          
-          <JiraTasks title='Pendientes' value='pending' />
-          
-          <JiraTasks title='Avanzando' value='in-progress' />
-          
-          <JiraTasks title='Terminadas' value='done' />
+	return (
+		<>
+			<h1>Tareas</h1>
+			<p>Manejo de estado con objectos de Zustand</p>
+			<hr />
 
-      </div>
-
-      
-
-
-
-    </>
-  );
+			<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+				<JiraTasks title="Pendientes" status={TaskStatus.OPEN} tasks={pendingTasks} />
+				<JiraTasks title="En progreso" status={TaskStatus.IN_PROGRESS} tasks={inProgressTasks} />
+				<JiraTasks title="Terminadas" status={TaskStatus.DONE} tasks={doneTasks} />
+			</div>
+		</>
+	);
 };
