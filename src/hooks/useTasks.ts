@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import type { TaskStatus } from "@/interfaces";
-import { useTaskStore } from "@/stores";
+import { type TaskStatus, useTaskStore } from "@/stores";
 
 interface Options {
 	status: TaskStatus;

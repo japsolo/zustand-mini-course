@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { useTasks } from "@/hooks/useTasks";
-import type { Task, TaskStatus } from "@/interfaces/";
+import type { Task, TaskStatus } from "@/stores";
 import { SingleTask } from "./SingleTask";
 import { TaskHeader } from "./TaskHeader";
 
