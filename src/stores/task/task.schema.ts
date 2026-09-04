@@ -68,3 +68,9 @@ export const taskStateSchema = z.object({
 });
 
 export type Task = z.infer<typeof taskSchema>;
+
+export const taskTitleSchema = z
+	.string({ error: "El título es obligatorio" })
+	.trim()
+	.min(3, { message: "El título debe tener al menos 3 caracteres" })
+	.max(30, { message: "El título no puede superar los 30 caracteres" });

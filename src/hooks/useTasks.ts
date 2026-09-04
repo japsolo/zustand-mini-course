@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { type TaskStatus, useTaskStore } from "@/stores";
+import { type TaskStatus, taskTitleSchema, useTaskStore } from "@/stores";
 
 interface Options {
 	status: TaskStatus;
@@ -20,13 +20,21 @@ export const useTasks = ({ status, section }: Options) => {
 			inputPlaceholder: "Ej: comprar tomates",
 			showCancelButton: true,
 			inputValidator: (value) => {
-				if (!value) return "El nombre de la tarea es obligatorio";
+				const { error, success } = taskTitleSchema.safeParse(value);
+
+				if (!success) {
+					return error.issues[0].message;
+				}
 			},
 		});
 
-		const { isConfirmed, value: taskText } = response;
+		const { isConfirmed, value } = response;
 
 		if (!isConfirmed) return;
+
+		const { success, data: taskText } = taskTitleSchema.safeParse(value);
+
+		if (!success) return;
 
 		addTask(taskText, status);
 	};
