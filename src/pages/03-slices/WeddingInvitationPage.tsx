@@ -1,23 +1,49 @@
+import { useState } from "react";
+import z from "zod";
 import { WhiteCard } from "@/components";
-import { useWeddingBoundStore } from "@/stores/wedding";
+import { useWeddingInvitation } from "@/hooks/useWeddingInvitation";
+import { weddingInvitationSchema } from "@/stores/wedding/wedding-invitation.schema";
 
 export const WeddingInvitationPage = () => {
-	const firstName = useWeddingBoundStore((state) => state.firstName);
-	const lastName = useWeddingBoundStore((state) => state.lastName);
-	const setFirstName = useWeddingBoundStore((state) => state.setFirstName);
-	const setLastName = useWeddingBoundStore((state) => state.setLastName);
-	const guestCount = useWeddingBoundStore((state) => state.guestCount);
-	const setGuestCount = useWeddingBoundStore((state) => state.setGuestCount);
-	const eventDate = useWeddingBoundStore((state) => state.getEventDate());
-	const eventTime = useWeddingBoundStore((state) => state.getEventTime());
-	const setEventDate = useWeddingBoundStore((state) => state.setEventDate);
-	const setEventTime = useWeddingBoundStore((state) => state.setEventTime);
-	const setIsConfirmed = useWeddingBoundStore((state) => state.setIsConfirmed);
-	const isConfirmed = useWeddingBoundStore((state) => state.isConfirmed);
+	const [errors, setErrors] = useState<Record<string, string>>({});
+	const {
+		firstName,
+		lastName,
+		guestCount,
+		eventDate,
+		eventTime,
+		isComing,
+
+		setFirstName,
+		setLastName,
+		setGuestCount,
+		setEventDate,
+		setEventTime,
+		setIsComing,
+		resetValues,
+	} = useWeddingInvitation();
 
 	const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		console.log({ eventDate, eventTime, guestCount, firstName, lastName, isConfirmed });
+		const formData = Object.fromEntries(new FormData(e.currentTarget));
+
+		const parsed = weddingInvitationSchema.safeParse(formData);
+
+		if (!parsed.success) {
+			const { fieldErrors } = z.flattenError(parsed.error);
+			// Solo el primer mensaje por campo: es el que se muestra debajo del input.
+			const mappedErrors = Object.fromEntries(
+				Object.entries(fieldErrors).map(([field, messages]) => [field, messages[0]]),
+			);
+			setErrors(mappedErrors);
+			return;
+		}
+
+		setErrors({});
+		resetValues();
+
+		console.log("%cDatos enviados!!!", "color: orange; font-size: 24px");
+		console.log("data:", parsed.data);
 	};
 
 	return (
@@ -43,6 +69,7 @@ export const WeddingInvitationPage = () => {
 										id="firstName"
 										placeholder="Ej: Jane"
 									/>
+									{errors.firstName && <p className="text-xs text-red-600"> {errors.firstName}</p>}
 								</div>
 							</div>
 							<div className="px-3 w-full sm:w-1/2">
@@ -58,6 +85,7 @@ export const WeddingInvitationPage = () => {
 										id="lastName"
 										placeholder="Ej: Smith"
 									/>
+									{errors.lastName && <p className="text-xs text-red-600"> {errors.lastName}</p>}
 								</div>
 							</div>
 						</div>
@@ -69,12 +97,13 @@ export const WeddingInvitationPage = () => {
 								value={guestCount}
 								onChange={(e) => setGuestCount(Number(e.target.value))}
 								type="number"
-								name="guestNumber"
-								id="guestNumber"
+								name="guestCount"
+								id="guestCount"
 								placeholder="Ej: 5"
 								min="0"
 								className="w-full appearance-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
 							/>
+							{errors.guestCount && <p className="text-xs text-red-600"> {errors.guestCount}</p>}
 						</div>
 
 						<div className="flex flex-wrap -mx-3">
@@ -90,6 +119,7 @@ export const WeddingInvitationPage = () => {
 										value={eventDate}
 										onChange={(e) => setEventDate(e.target.value)}
 									/>
+									{errors.eventDate && <p className="text-xs text-red-600"> {errors.eventDate}</p>}
 								</div>
 							</div>
 							<div className="px-3 w-full sm:w-1/2">
@@ -104,6 +134,7 @@ export const WeddingInvitationPage = () => {
 										value={eventTime}
 										onChange={(e) => setEventTime(e.target.value)}
 									/>
+									{errors.eventTime && <p className="text-xs text-red-600"> {errors.eventTime}</p>}
 								</div>
 							</div>
 						</div>
@@ -120,8 +151,9 @@ export const WeddingInvitationPage = () => {
 										name="isComing"
 										id="radioButton1"
 										className="w-5 h-5 cursor-pointer"
-										onChange={() => setIsConfirmed(true)}
-										checked={isConfirmed}
+										onChange={() => setIsComing(true)}
+										checked={isComing === true}
+										value="Si"
 									/>
 									<span>Si</span>
 								</label>
@@ -135,12 +167,14 @@ export const WeddingInvitationPage = () => {
 										name="isComing"
 										id="radioButton2"
 										className="w-5 h-5 cursor-pointer"
-										onChange={() => setIsConfirmed(false)}
-										checked={!isConfirmed}
+										onChange={() => setIsComing(false)}
+										checked={isComing === false}
+										value="No"
 									/>
 									<span>No</span>
 								</label>
 							</div>
+							{errors.isComing && <p className="text-xs text-red-600"> {errors.isComing}</p>}
 						</div>
 
 						<div>

@@ -1,18 +1,17 @@
 import type { StateCreator } from "zustand";
 
-interface ConfirmationState {
-	isConfirmed: boolean;
+interface ComingState {
+	isComing?: boolean;
 }
 
 interface Actions {
-	setIsConfirmed: (isConfirm: boolean) => void;
+	setIsComing: (isConfirm: boolean | undefined) => void;
 }
 
-export type ConfirmationSlice = ConfirmationState & Actions;
+export type ComingSlice = ComingState & Actions;
 
-export const createConfirmationSlice: StateCreator<ConfirmationSlice> = (set) => {
+export const createComingSlice: StateCreator<ComingSlice> = (set) => {
 	return {
-		isConfirmed: false,
-		setIsConfirmed: (isConfirmed: boolean) => set({ isConfirmed }),
+		setIsComing: (isComing: boolean | undefined) => set({ isComing }),
 	};
 };
