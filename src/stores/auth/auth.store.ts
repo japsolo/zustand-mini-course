@@ -26,18 +26,18 @@ const storeApi: StateCreator<AuthStore, [["zustand/devtools", never], ["zustand/
 		try {
 			const { token, ...user } = await AuthService.login(email, password);
 			set({ status: "authorized", token, user }, false, { type: "loginUser" });
-		} catch {
+		} catch (error) {
 			set({ status: "unauthorized", token: undefined, user: undefined }, false, { type: "loginUser" });
-			throw "Unauthorized";
+			throw error;
 		}
 	},
 	checkAuthStatus: async () => {
 		try {
 			const { token, ...user } = await AuthService.checkStatus();
 			set({ status: "authorized", token, user }, false, { type: "checkAuthStatus" });
-		} catch {
+		} catch (error) {
 			set({ status: "unauthorized", token: undefined, user: undefined }, false, { type: "checkAuthStatus" });
-			throw "Unauthorized";
+			throw error;
 		}
 	},
 	logoutUser: () => set({ status: "unauthorized", token: undefined, user: undefined }, false, { type: "logoutUser" }),

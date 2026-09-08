@@ -1,7 +1,11 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import z from "zod";
 import { useAuthStore } from "@/stores";
+import { authSchema } from "@/stores/auth/auth.schema";
 
 export const LoginPage = () => {
+	const [errors, setErrors] = useState<Record<string, string>>({});
 	const navigate = useNavigate();
 	const loginUser = useAuthStore((state) => state.loginUser);
 
@@ -13,16 +17,26 @@ export const LoginPage = () => {
 			remember: { checked: boolean };
 		};
 
-		// console.log(email.value, password.value, remember.checked);
+		const validation = authSchema.safeParse({ email: email.value, password: password.value });
+
+		if (!validation.success) {
+			const { fieldErrors } = z.flattenError(validation.error);
+			const mappedErrors = Object.fromEntries(
+				Object.entries(fieldErrors).map(([field, messages]) => [field, messages[0]]),
+			);
+			setErrors(mappedErrors);
+			return;
+		}
 
 		try {
 			await loginUser(email.value, password.value);
 			email.value = "";
 			password.value = "";
 			remember.checked = false;
+			setErrors({});
 			navigate("/dashboard");
-		} catch {
-			console.log("Unable to authenticate");
+		} catch (error) {
+			setErrors({ form: error instanceof Error ? error.message : "Unable to login" });
 		}
 	};
 
@@ -36,6 +50,11 @@ export const LoginPage = () => {
 						Email:
 					</label>
 					<input type="text" name="email" id="email" autoComplete="off" />
+					{errors.email && (
+						<p role="alert" className="mt-4 text-xs text-red-600">
+							{errors.email}
+						</p>
+					)}
 				</div>
 
 				<div className="mb-4">
@@ -43,6 +62,11 @@ export const LoginPage = () => {
 						Password:
 					</label>
 					<input type="password" name="password" id="password" autoComplete="off" />
+					{errors.password && (
+						<p role="alert" className="mt-4 text-xs text-red-600">
+							{errors.password}
+						</p>
+					)}
 				</div>
 
 				<div className="flex items-center mb-4">
@@ -61,6 +85,12 @@ export const LoginPage = () => {
 				<button type="submit" className="bg-indigo-600">
 					Login
 				</button>
+
+				{errors.form && (
+					<p role="alert" className="mt-4 text-xs text-red-600">
+						{errors.form}
+					</p>
+				)}
 			</form>
 		</>
 	);
