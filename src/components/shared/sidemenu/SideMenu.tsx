@@ -7,8 +7,8 @@ import {
 	IoPawOutline,
 	IoSpeedometerOutline,
 } from "react-icons/io5";
-import { NavLink } from "react-router-dom";
 import "./SideMenu.css";
+import { useAuthStore } from "@/stores";
 import { SideMenuItem } from "./SideMenuItem";
 
 interface MenuItem {
@@ -52,6 +52,9 @@ const menuItems: MenuItem[] = [
 ];
 
 export const SideMenu = () => {
+	const logoutUser = useAuthStore((state) => state.logoutUser);
+	const user = useAuthStore((state) => state.user);
+
 	return (
 		<div id="menu" className="overflow-y-scroll left-0 z-10 w-80 min-h-screen bg-gray-900 text-slate-300">
 			<div id="logo" className="px-6 my-4">
@@ -74,7 +77,7 @@ export const SideMenu = () => {
 							alt=""
 						/>
 					</span>
-					<span className="text-sm font-bold md:text-base">Edward Tompson</span>
+					<span className="text-sm font-bold md:text-base">{user?.fullName}</span>
 				</a>
 			</div>
 
@@ -83,17 +86,18 @@ export const SideMenu = () => {
 				{menuItems.map((item) => (
 					<SideMenuItem key={item.href} {...item} />
 				))}
-
-				{/* Logout */}
-				<NavLink to={"/auth/login"} className="mt-10">
-					<div>
-						<IoLogOutOutline />
-					</div>
+				{/** biome-ignore lint/a11y/noStaticElementInteractions: is just for testing purposes */}
+				{/** biome-ignore lint/a11y/useKeyWithClickEvents: is just for testing purposes */}
+				<div
+					className="flex gap-2 items-center px-2 py-3 mt-10 border-b border-b-[#334155] cursor-pointer"
+					onClick={logoutUser}
+				>
+					<IoLogOutOutline />
 					<div className="flex flex-col">
 						<span className="text-lg font-bold leading-5 text-slate-300">Logout</span>
 						<span className="hidden text-sm text-slate-500 md:block">Cerrar sesión</span>
 					</div>
-				</NavLink>
+				</div>
 			</nav>
 		</div>
 	);

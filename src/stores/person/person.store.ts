@@ -2,6 +2,7 @@ import type z from "zod";
 import { create, type StateCreator } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { firebaseStorage } from "@/stores/storages/firebase-storage";
+import { useWeddingBoundStore } from "@/stores/wedding";
 import { personStateSchema } from "./person.schema";
 
 // import { customSessionStorage } from "../storages/session-storage";
@@ -59,3 +60,14 @@ export const usePersonStore = create<PersonStore>()(
 		}),
 	),
 );
+
+// De esta manera nos suscribimos al store de Person. El callback trae:
+// nextState, prevState, que son las instancias del estado de Person.
+// Al usar useWeddingBoundStore Podemos asignar las variables recolectadas
+// con anterioridad del nextState. Tener cuidado de no hacer esta llamada
+// cíclica: o sea, hacer lo mismo en useWeddingBoundStore.
+usePersonStore.subscribe((nextState) => {
+	const { firstName, lastName } = nextState;
+	useWeddingBoundStore.getState().setFirstName(firstName);
+	useWeddingBoundStore.getState().setLastName(lastName);
+});

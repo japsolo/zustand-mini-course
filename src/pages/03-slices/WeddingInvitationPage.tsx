@@ -90,7 +90,7 @@ export const WeddingInvitationPage = () => {
 							</div>
 						</div>
 						<div className="mb-5">
-							<label className="mb-3 block text-base font-medium text-[#07074D]" htmlFor="guestNumber">
+							<label className="mb-3 block text-base font-medium text-[#07074D]" htmlFor="guestCount">
 								¿Con cuántos invitados vendrás?
 							</label>
 							<input
