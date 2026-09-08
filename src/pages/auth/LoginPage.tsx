@@ -1,17 +1,29 @@
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/stores";
+
 export const LoginPage = () => {
-	const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+	const navigate = useNavigate();
+	const loginUser = useAuthStore((state) => state.loginUser);
+
+	const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		// const { username, password, remember } = event.target as HTMLFormElement;
-		const { username, password, remember } = event.target as typeof event.target & {
-			username: { value: string };
+		const { email, password, remember } = event.target as typeof event.target & {
+			email: { value: string };
 			password: { value: string };
 			remember: { checked: boolean };
 		};
-		console.log(username.value, password.value, remember.checked);
 
-		username.value = "";
-		password.value = "";
-		remember.checked = false;
+		// console.log(email.value, password.value, remember.checked);
+
+		try {
+			await loginUser(email.value, password.value);
+			email.value = "";
+			password.value = "";
+			remember.checked = false;
+			navigate("/dashboard");
+		} catch {
+			console.log("Unable to authenticate");
+		}
 	};
 
 	return (
@@ -20,15 +32,15 @@ export const LoginPage = () => {
 
 			<form onSubmit={onSubmit}>
 				<div className="mb-4">
-					<label htmlFor="username" className="block text-gray-600">
-						Username
+					<label htmlFor="email" className="block text-gray-600">
+						Email:
 					</label>
-					<input type="text" name="username" id="username" autoComplete="off" />
+					<input type="text" name="email" id="email" autoComplete="off" />
 				</div>
 
 				<div className="mb-4">
 					<label htmlFor="password" className="block text-gray-600">
-						Password
+						Password:
 					</label>
 					<input type="password" name="password" id="password" autoComplete="off" />
 				</div>
@@ -50,11 +62,6 @@ export const LoginPage = () => {
 					Login
 				</button>
 			</form>
-			<div className="mt-6 text-center text-blue-500">
-				<a href="/" className="hover:underline">
-					Sign up Here
-				</a>
-			</div>
 		</>
 	);
 };

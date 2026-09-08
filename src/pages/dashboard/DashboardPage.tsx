@@ -1,19 +1,21 @@
 import {
 	IoAccessibilityOutline,
 	IoHeartOutline,
+	IoInformationOutline,
 	IoListOutline,
 	IoLockClosedOutline,
 	IoPawOutline,
 } from "react-icons/io5";
 import { useShallow } from "zustand/shallow";
-import { WhiteCard } from "@/components";
-import { useBearStore, usePersonStore, useTaskStore } from "@/stores";
+import { RequestInfo, WhiteCard } from "@/components";
+import { useAuthStore, useBearStore, usePersonStore, useTaskStore } from "@/stores";
 
 export const Dashboard = () => {
 	const totalBears = useBearStore((state) => state.totalBears);
 	const { firstName, lastName } = usePersonStore(useShallow((state) => state));
 	const tasks = Object.keys(useTaskStore((state) => state.tasks));
 	const fullName = `${firstName} ${lastName}`;
+	const authUser = useAuthStore(useShallow((state) => state.user));
 
 	return (
 		<>
@@ -49,7 +51,12 @@ export const Dashboard = () => {
 				<WhiteCard centered>
 					<IoLockClosedOutline size={50} className="text-indigo-600" />
 					<h2>Auth</h2>
-					<p>Información</p>
+					<p>{authUser?.email}</p>
+				</WhiteCard>
+
+				<WhiteCard className="col-span-3">
+					<IoInformationOutline size={50} className="text-indigo-600" />
+					<RequestInfo />
 				</WhiteCard>
 			</div>
 		</>
